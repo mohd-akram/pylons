@@ -25,7 +25,7 @@ def route_url(route_name, request, *elements, **kw):
 
     if '_anchor' in kw:
         anchor = kw.pop('_anchor')
-        if isinstance(anchor, unicode):
+        if isinstance(anchor, str):
             anchor = anchor.encode('utf-8')
         anchor = '#' + anchor
 

@@ -44,7 +44,7 @@ def call_wsgi_application(application, environ, catch_exc_info=False):
 
     def start_response(status, headers, exc_info=None):
         if exc_info is not None and not catch_exc_info:
-            raise exc_info[0], exc_info[1], exc_info[2]
+            raise exc_info[0](exc_info[1]).with_traceback(exc_info[2])
         captured[:] = [status, headers, exc_info]
         return output.append
     app_iter = application(environ, start_response)
@@ -107,7 +107,7 @@ class ContextObj(object):
     (raises an Exception when the attribute does not exist)"""
     def __repr__(self):
         attrs = sorted((name, value)
-                       for name, value in self.__dict__.iteritems()
+                       for name, value in self.__dict__.items()
                        if not name.startswith('_'))
         parts = []
         for name, value in attrs:
@@ -224,9 +224,8 @@ class PylonsInstaller(Installer):
                     for line in self.dist.get_metadata_lines('top_level.txt')
                     if line.strip() and not line.strip().startswith('#')]
         if not modules:
-            print >> sys.stderr, 'No modules are listed in top_level.txt'
-            print >> sys.stderr, \
-                'Try running python setup.py egg_info to regenerate that file'
+            print('No modules are listed in top_level.txt', file=sys.stderr)
+            print('Try running python setup.py egg_info to regenerate that file', file=sys.stderr)
         for module in modules:
             if pkg_resources.resource_exists(module, self.config_file):
                 return self.template_renderer(

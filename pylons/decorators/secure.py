@@ -1,6 +1,6 @@
 """Security related decorators"""
 import logging
-import urlparse
+import urllib.parse
 
 from decorator import decorator
 try:
@@ -104,8 +104,8 @@ def https(url_or_callable=None):
         else:
             url = url_or_callable
         # Ensure an https scheme, which also needs a host
-        parts = urlparse.urlparse(url)
-        url = urlparse.urlunparse(('https', parts[1] or request.host) +
+        parts = urllib.parse.urlparse(url)
+        url = urllib.parse.urlunparse(('https', parts[1] or request.host) +
                                   parts[2:])
 
         log.debug('Redirecting non-https request: %s to: %s',

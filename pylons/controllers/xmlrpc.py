@@ -2,7 +2,7 @@
 import inspect
 import logging
 import types
-import xmlrpclib
+import xmlrpc.client
 
 from paste.response import replace_header
 
@@ -13,10 +13,10 @@ __all__ = ['XMLRPCController']
 
 log = logging.getLogger(__name__)
 
-XMLRPC_MAPPING = ((basestring, 'string'), (list, 'array'), (bool, 'boolean'),
+XMLRPC_MAPPING = ((str, 'string'), (list, 'array'), (bool, 'boolean'),
                   (int, 'int'), (float, 'double'), (dict, 'struct'),
-                  (xmlrpclib.DateTime, 'dateTime.iso8601'),
-                  (xmlrpclib.Binary, 'base64'))
+                  (xmlrpc.client.DateTime, 'dateTime.iso8601'),
+                  (xmlrpc.client.Binary, 'base64'))
 
 
 def xmlrpc_sig(args):
@@ -33,8 +33,8 @@ def xmlrpc_sig(args):
 
 def xmlrpc_fault(code, message):
     """Convienence method to return a Pylons response XMLRPC Fault"""
-    fault = xmlrpclib.Fault(code, message)
-    return Response(body=xmlrpclib.dumps(fault, methodresponse=True))
+    fault = xmlrpc.client.Fault(code, message)
+    return Response(body=xmlrpc.client.dumps(fault, methodresponse=True))
 
 
 class XMLRPCController(WSGIController):
@@ -128,7 +128,7 @@ class XMLRPCController(WSGIController):
             abort(413, "XML body too large")
 
         body = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
-        rpc_args, orig_method = xmlrpclib.loads(body)
+        rpc_args, orig_method = xmlrpc.client.loads(body)
 
         method = self._find_method_name(orig_method)
         func = self._find_method(method)
@@ -167,7 +167,7 @@ class XMLRPCController(WSGIController):
         # Change the arg list into a keyword dict based off the arg
         # names in the functions definition
         arglist = inspect.getargspec(func)[0][1:]
-        kargs = dict(zip(arglist, rpc_args))
+        kargs = dict(list(zip(arglist, rpc_args)))
         kargs['action'], kargs['environ'] = method, environ
         kargs['start_response'] = start_response
         self.rpc_kargs = kargs
@@ -193,10 +193,10 @@ class XMLRPCController(WSGIController):
     def _dispatch_call(self):
         """Dispatch the call to the function chosen by __call__"""
         raw_response = self._inspect_call(self._func)
-        if not isinstance(raw_response, xmlrpclib.Fault):
+        if not isinstance(raw_response, xmlrpc.client.Fault):
             raw_response = (raw_response,)
 
-        response = xmlrpclib.dumps(raw_response, methodresponse=True,
+        response = xmlrpc.client.dumps(raw_response, methodresponse=True,
                                    allow_none=self.allow_none)
         return response
 
@@ -261,7 +261,7 @@ class XMLRPCController(WSGIController):
         if method:
             return getattr(method, 'signature', '')
         else:
-            return xmlrpclib.Fault(0, 'No such method name')
+            return xmlrpc.client.Fault(0, 'No such method name')
     system_methodSignature.signature = [['array', 'string'],
                                         ['string', 'string']]
 
@@ -274,7 +274,7 @@ class XMLRPCController(WSGIController):
             if sig:
                 help += "\n\nMethod signature: %s" % sig
             return help
-        return xmlrpclib.Fault(0, "No such method name")
+        return xmlrpc.client.Fault(0, "No such method name")
     system_methodHelp.signature = [['string', 'string']]
 
 

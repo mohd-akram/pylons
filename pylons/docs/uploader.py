@@ -1,4 +1,4 @@
-import cPickle
+import pickle
 import mimetypes
 import os
 import sys
@@ -33,7 +33,7 @@ def scan_dir(parent, directory):
         else:
             if name.endswith('.fpickle') or name.endswith('.pickle'):
                 fp = open(full_name, 'r')
-                data = cPickle.load(fp)
+                data = pickle.load(fp)
                 fp.close()
                 files.append(
                     ('/'.join([parent, name]), data)
@@ -95,9 +95,9 @@ for filename, filedoc in files:
     resp, data = http.request(post_uri, 'POST', body=content, headers=headers)
     status_code = int(resp.status)
     if status_code == 200:
-        print "Uploaded %s" % filename
+        print("Uploaded %s" % filename)
     else:
-        print "FAILED: %s" % filename
+        print("FAILED: %s" % filename)
 
 for filename in images:
     headers['Content-Type'] = mimetypes.guess_type(filename)
@@ -110,6 +110,6 @@ for filename in images:
                               'POST', body=file_content, headers=headers)
     status_code = int(resp.status)
     if status_code == 200:
-        print "Uploaded %s" % filename
+        print("Uploaded %s" % filename)
     else:
-        print "FAILED: %s" % filename
+        print("FAILED: %s" % filename)

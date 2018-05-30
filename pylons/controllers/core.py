@@ -88,7 +88,7 @@ class WSGIController(object):
 
         if argspec[2]:
             if self._py_object.config['pylons.tmpl_context_attach_args']:
-                for k, val in kargs.iteritems():
+                for k, val in kargs.items():
                     setattr(c, k, val)
             args = kargs
         else:
@@ -105,7 +105,7 @@ class WSGIController(object):
                       func.__name__, args)
         try:
             result = self._perform_call(func, args)
-        except HTTPException, httpe:
+        except HTTPException as httpe:
             if log_debug:
                 log.debug("%r method raised HTTPException: %s (code: %s)",
                           func.__name__, httpe.__class__.__name__,
@@ -222,7 +222,7 @@ class WSGIController(object):
                     log.debug("Controller returned a string "
                               ", writing it to pylons.response")
                 py_response.body = py_response.body + response
-            elif isinstance(response, unicode):
+            elif isinstance(response, str):
                 if log_debug:
                     log.debug("Controller returned a unicode string "
                               ", writing it to pylons.response")
@@ -233,7 +233,7 @@ class WSGIController(object):
                 if log_debug:
                     log.debug("Controller returned a Response object, merging "
                               "it with pylons.response")
-                for name, value in py_response.headers.items():
+                for name, value in list(py_response.headers.items()):
                     if name.lower() == 'set-cookie':
                         response.headers.add(name, value)
                     else:

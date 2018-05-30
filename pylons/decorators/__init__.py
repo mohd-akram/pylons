@@ -140,18 +140,18 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             log.debug("Validating against a schema")
             try:
                 self.form_result = schema.to_python(decoded, state)
-            except formencode.Invalid, e:
+            except formencode.Invalid as e:
                 errors = e.unpack_errors(variable_decode, dict_char, list_char)
         if validators:
             log.debug("Validating against provided validators")
             if isinstance(validators, dict):
                 if not hasattr(self, 'form_result'):
                     self.form_result = {}
-                for field, validator in validators.iteritems():
+                for field, validator in validators.items():
                     try:
                         self.form_result[field] = \
                             validator.to_python(decoded.get(field), state)
-                    except formencode.Invalid, error:
+                    except formencode.Invalid as error:
                         errors[field] = error
         if errors:
             log.debug("Errors found in validation, parsing form with htmlfill "

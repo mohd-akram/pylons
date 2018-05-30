@@ -19,7 +19,7 @@ import hmac
 import logging
 import re
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 try:

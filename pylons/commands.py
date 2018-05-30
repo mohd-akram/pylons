@@ -76,7 +76,7 @@ def is_minimal_template(package, fail_fast=False):
     try:
         # Check if PACKAGE.lib.base exists
         __import__(package + '.lib.base')
-    except ImportError, ie:
+    except ImportError as ie:
         if 'No module named lib.base' in str(ie):
             minimal_template = True
     except:
@@ -224,7 +224,7 @@ class ControllerCommand(Command):
                     dest=os.path.join('tests', 'functional'),
                     filename='test_' + testname,
                     template_renderer=paste_script_template_renderer)
-        except BadCommand, e:
+        except BadCommand as e:
             raise BadCommand('An error occurred. %s' % e)
         except:
             msg = str(sys.exc_info()[1])
@@ -365,8 +365,8 @@ class RestControllerCommand(Command):
                     dest=os.path.join('tests', 'functional'),
                     filename='test_' + testname,
                     template_renderer=paste_script_template_renderer)
-            print resource_command
-        except BadCommand, e:
+            print(resource_command)
+        except BadCommand as e:
             raise BadCommand('An error occurred. %s' % e)
         except:
             msg = str(sys.exc_info()[1])
@@ -428,7 +428,7 @@ class RoutesCommand(Command):
         tresponse = test_app.get('/_test_vars')
         mapper = tresponse.config.get('routes.map')
         if mapper:
-            print mapper
+            print(mapper)
 
 
 class ShellCommand(Command):
@@ -527,10 +527,10 @@ class ShellCommand(Command):
         if can_import(helpers_module):
             locs['h'] = sys.modules[helpers_module]
 
-        exec ('from pylons import app_globals, config, request, response, '
-              'session, tmpl_context, url') in locs
-        exec ('from pylons.controllers.util import abort, redirect') in locs
-        exec 'from pylons.i18n import _, ungettext, N_' in locs
+        exec(('from pylons import app_globals, config, request, response, '
+              'session, tmpl_context, url'), locs)
+        exec(('from pylons.controllers.util import abort, redirect'), locs)
+        exec('from pylons.i18n import _, ungettext, N_', locs)
         locs.pop('__builtins__', None)
 
         # Import all objects from the base module

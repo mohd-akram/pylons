@@ -158,7 +158,7 @@ class PylonsConfig(dict):
         MIMETypes.init()
 
         # Ensure all the keys from defaults are present, load them if not
-        for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
+        for key, val in copy.deepcopy(PylonsConfig.defaults).items():
             conf.setdefault(key, val)
 
         # Load the errorware configuration from the Paste configuration file

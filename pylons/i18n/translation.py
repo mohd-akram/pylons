@@ -37,7 +37,7 @@ class LazyString(object):
         return self.func(*self.args, **self.kwargs)
 
     def __unicode__(self):
-        return unicode(self.eval())
+        return str(self.eval())
 
     def __str__(self):
         return str(self.eval())
@@ -162,7 +162,7 @@ def _get_translator(lang, **kwargs):
     try:
         translator = translation(conf['pylons.package'], localedir,
                                  languages=lang, **kwargs)
-    except IOError, ioe:
+    except IOError as ioe:
         raise LanguageError('IOError: %s' % ioe)
     translator.pylons_lang = lang
     return translator

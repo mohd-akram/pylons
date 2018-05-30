@@ -245,7 +245,7 @@ class PylonsApp(object):
         """
         # If this isn't a basestring, its an object, assume that its the
         # proper instance to begin with
-        if not isinstance(controller, basestring):
+        if not isinstance(controller, str):
             return controller
 
         # Check to see if we've cached the class instance for this name

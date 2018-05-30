@@ -3,7 +3,7 @@ import inspect
 import json
 import logging
 import types
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from paste.response import replace_header
 from pylons.controllers import WSGIController
@@ -110,7 +110,7 @@ class JSONRPCController(WSGIController):
             abort(411)
 
         raw_body = environ['wsgi.input'].read(length)
-        json_body = json.loads(urllib.unquote_plus(raw_body))
+        json_body = json.loads(urllib.parse.unquote_plus(raw_body))
 
         self._req_id = json_body['id']
         self._req_method = json_body['method']
@@ -136,7 +136,7 @@ class JSONRPCController(WSGIController):
                 err = jsonrpc_error(self._req_id, 'invalid_params')
                 return err(environ, start_response)
             else:
-                kargs = dict(zip(arglist, self._req_params))
+                kargs = dict(list(zip(arglist, self._req_params)))
         else:
             # JSON-RPC version 2 request.  Params may be default, and
             # are already a dict, so skip the parameter length check here.
@@ -169,16 +169,16 @@ class JSONRPCController(WSGIController):
         """Implement dispatch interface specified by WSGIController"""
         try:
             raw_response = self._inspect_call(self._func)
-        except JSONRPCError, e:
+        except JSONRPCError as e:
             self._error = e.as_dict()
-        except TypeError, e:
+        except TypeError as e:
             # Insufficient args in an arguments dict v2 call.
             if 'takes at least' in str(e):
                 err = _reserved_errors['invalid_params']
                 self._error = err.as_dict()
             else:
                 raise
-        except Exception, e:
+        except Exception as e:
             log.debug('Encountered unhandled exception: %s', repr(e))
             err = _reserved_errors['internal_error']
             self._error = err.as_dict()
@@ -192,7 +192,7 @@ class JSONRPCController(WSGIController):
 
         try:
             return json.dumps(response)
-        except TypeError, e:
+        except TypeError as e:
             log.debug('Error encoding response: %s', e)
             err = _reserved_errors['internal_error']
             return json.dumps(dict(
