@@ -93,20 +93,9 @@ def gettext(value):
     """
     return pylons.translator.gettext(value)
 lazy_gettext = lazify(gettext)
-
-
-def ugettext(value):
-    """Mark a string for translation. Returns the localized unicode
-    string of value.
-
-    Mark a string to be localized as follows::
-
-        _('This should be in lots of languages')
-
-    """
-    return pylons.translator.ugettext(value)
-_ = ugettext
-lazy_ugettext = lazify(ugettext)
+_ = gettext
+ugettext = gettext
+lazy_ugettext = lazy_gettext
 
 
 def ngettext(singular, plural, n):
@@ -126,25 +115,8 @@ def ngettext(singular, plural, n):
     """
     return pylons.translator.ngettext(singular, plural, n)
 lazy_ngettext = lazify(ngettext)
-
-
-def ungettext(singular, plural, n):
-    """Mark a string for translation. Returns the localized unicode
-    string of the pluralized value.
-
-    This does a plural-forms lookup of a message id. ``singular`` is
-    used as the message id for purposes of lookup in the catalog, while
-    ``n`` is used to determine which plural form to use. The returned
-    message is a Unicode string.
-
-    Mark a string to be localized as follows::
-
-        ungettext('There is %(num)d file here', 'There are %(num)d files here',
-                  n) % {'num': n}
-
-    """
-    return pylons.translator.ungettext(singular, plural, n)
-lazy_ungettext = lazify(ungettext)
+ungettext = ngettext
+lazy_ungettext = lazy_ngettext
 
 
 def _get_translator(lang, **kwargs):
